@@ -4,27 +4,13 @@
     box-sizing: border-box;
 }
 
-header.header {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    height: 60px;
-    line-height: 60px;
-    background-color: orange;
-    text-align: center;
-}
 
-.header img {
-    display: block;
-    margin: auto;
-    height: 60px;
-}
+
 
 .content{
     background-color: bisque;
     position: absolute;
-    top: 60px;
+    top: 0px;
     left: 0px;
     right: 0px;
     bottom: 60px;
