@@ -1,3 +1,6 @@
+/**
+ * Définition des vues par leur nom uniques.
+ */
 export const ROUTE = {
     WELCOME_TAB : {
         AUTH: "Auth",
