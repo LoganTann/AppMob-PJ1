@@ -1,30 +1,29 @@
-import { ROUTE } from "./routes";
+import { routes } from "./views/routes";
 import React from "react";
 import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import MainPage from "./components/MainPage";
-import Auth from "./components/Auth";
-import ProfilePage from "./components/ProfilePage";
 
 const Stack = createStackNavigator();
 
 export default function App() {
+	const pages = [];
+	for (const groupName in routes) {
+		for (const routeName in routes[groupName]) {
+			const route = routes[groupName][routeName];
+			pages.push(
+				<Stack.Screen name={route.name} component={route.component} />
+			);
+		}
+	}
+
 	return (
 		<NavigationContainer>
 			<Stack.Navigator
-				initialRouteName={ROUTE.WELCOME_TAB.PRINCIPALE}
+				initialRouteName={routes.welcome.main.name}
 				styles={styles.container}
 			>
-				<Stack.Screen
-					name={ROUTE.WELCOME_TAB.PRINCIPALE}
-					component={MainPage}
-				/>
-				<Stack.Screen name={ROUTE.WELCOME_TAB.AUTH} component={Auth} />
-				<Stack.Screen
-					name={ROUTE.PROFIL_TAB.PROFIL}
-					component={ProfilePage}
-				/>
+				{pages}
 			</Stack.Navigator>
 		</NavigationContainer>
 	);

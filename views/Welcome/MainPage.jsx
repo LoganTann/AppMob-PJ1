@@ -1,4 +1,3 @@
-import { ROUTE } from "../routes";
 import { View, Text, Button } from "react-native";
 import React from "react";
 
@@ -20,9 +19,7 @@ export default function MainPage(props) {
 			</View>
 			<Button
 				title="S'authentifier"
-				onPress={() =>
-					props.navigation.navigate(ROUTE.WELCOME_TAB.AUTH)
-				}
+				onPress={() => props.navigation.navigate("auth/auth")}
 			></Button>
 		</View>
 	);

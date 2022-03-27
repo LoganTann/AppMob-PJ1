@@ -3,6 +3,7 @@ import { View, TextInput, Button, Text } from "react-native";
 import styles from "./authStyles";
 
 /**
+ * Composant affichant un formulaire de connexion ou de création de compte
  * @param {{onSubmit: function}} props
  */
 export default function MailPasswordForm(props) {
@@ -28,6 +29,7 @@ export default function MailPasswordForm(props) {
 				onChangeText={setPassword}
 				textContentType="password"
 				secureTextEntry={true}
+				onSubmitEditing={onSubmit}
 			></TextInput>
 
 			{props.children}

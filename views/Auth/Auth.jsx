@@ -1,4 +1,3 @@
-import { ROUTE } from "../routes";
 import { View, Text, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -6,10 +5,10 @@ import {
 	signInWithEmailAndPassword,
 } from "firebase/auth";
 
-import { auth } from "../utils/firebase";
-import { convertAuthMessage } from "../utils/auth";
-import styles from "./pageElements/auth/authStyles";
-import MailPasswordForm from "./pageElements/auth/MailPasswordForm";
+import { auth } from "../../utils/firebase";
+import { convertAuthMessage } from "../../utils/auth";
+import styles from "./authStyles";
+import MailPasswordForm from "./MailPasswordForm";
 
 export default function Auth(props) {
 	const [loginForm, setLoginForm] = useState(true);
@@ -28,7 +27,7 @@ export default function Auth(props) {
 					`Bienvenue, ${data.user.email} ! Nous vous connectons...`
 				);
 				setTimeout(
-					() => props.navigation.navigate(ROUTE.PROFIL_TAB.PROFIL),
+					() => props.navigation.navigate("home/profile"),
 					1000
 				);
 			})
