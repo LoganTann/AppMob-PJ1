@@ -1,23 +1,65 @@
 import { ROUTE } from "../routes";
-import { View, Text, Button } from "react-native";
-import React from "react";
-import app from "../utils/firebase";
-export default function Auth(props) {
-    const boxStyle = {
-        backgroundColor: '#f0f0f0',
-        padding: 20,
-        margin: 20,
-        borderRadius: 10
-    };
+import { View, Text, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+	createUserWithEmailAndPassword,
+	signInWithEmailAndPassword,
+} from "firebase/auth";
 
-    return (
-        <View>
-            <View style={boxStyle}>
-                <Text>Bienvenue sur la page d'authentification !</Text>
-                <Text>Cliquez sur le bouton ci-dessous pour retourner en arrière :</Text>
-            </View>
-            <Button title="Profil" onPress={() => props.navigation.navigate(ROUTE.PROFIL_TAB.PROFIL)}>
-            </Button>
-        </View>
-    );
+import { auth } from "../utils/firebase";
+import { convertAuthMessage } from "../utils/auth";
+import styles from "./pageElements/auth/authStyles";
+import MailPasswordForm from "./pageElements/auth/MailPasswordForm";
+
+export default function Auth(props) {
+	const [loginForm, setLoginForm] = useState(true);
+	const [message, setMessage] = useState("");
+	const [messageColor, setMessageColor] = useState("red");
+
+	function onSubmit(mail, password) {
+		const execute = loginForm
+			? signInWithEmailAndPassword
+			: createUserWithEmailAndPassword;
+
+		execute(auth, mail, password)
+			.then(function (data) {
+				setMessageColor("green");
+				setMessage(
+					`Bienvenue, ${data.user.email} ! Nous vous connectons...`
+				);
+				setTimeout(
+					() => props.navigation.navigate(ROUTE.PROFIL_TAB.PROFIL),
+					1000
+				);
+			})
+			.catch(function (error) {
+				setMessageColor("red");
+				setMessage(convertAuthMessage(error));
+			});
+	}
+
+	return (
+		<View>
+			<Text style={styles.pageTitle}>
+				{loginForm ? "Se connecter" : "Créer un compte"}
+			</Text>
+
+			<Text style={{ color: messageColor, padding: "1em" }}>
+				{message}
+			</Text>
+
+			<MailPasswordForm onSubmit={onSubmit}>
+				<TouchableOpacity
+					style={styles.switchFormBtn}
+					onPress={() => setLoginForm(!loginForm)}
+				>
+					<Text style={{ color: "#555" }}>
+						{loginForm
+							? "Pas encore de compte ? Cliquez ici pour en créer un !"
+							: "Vous avez déjà un compte ? Cliquez ici pour vous connecter !"}
+					</Text>
+				</TouchableOpacity>
+			</MailPasswordForm>
+		</View>
+	);
 }

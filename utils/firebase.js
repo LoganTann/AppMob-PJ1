@@ -1,15 +1,22 @@
-
-import { initializeApp } from '@react-native-firebase/app';
-import auth from '@react-native-firebase/auth';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-	apiKey: "AIzaSyBLs1fF1FBzHT4DvlVW6I9PsX_4tALXEFk",
-	authDomain: "projectonz.firebaseapp.com",
-	projectId: "projectonz",
-	storageBucket: "projectonz.appspot.com",
-	messagingSenderId: "1032585287844",
-	appId: "1:1032585287844:web:c76a26cf2e0e2605e3ee31"
+	apiKey: "AIzaSyC_kBWLJBT57yFE4vArMPByc4XxXCStQtQ",
+	authDomain: "kagescan-dev.firebaseapp.com",
+	databaseURL: "https://kagescan-dev.firebaseio.com",
+	projectId: "kagescan-dev",
+	storageBucket: "kagescan-dev.appspot.com",
+	messagingSenderId: "274057544232",
+	appId: "1:274057544232:web:14f0719b187959f2f06b1d",
 };
-console.log("toto");
-const app = initializeApp(firebaseConfig);
-export default app;
+
+// Initialize Firebase
+export const app = initializeApp(firebaseConfig);
+
+// Initialize Cloud Firestore and get a reference to the service
+export const db = getFirestore(app);
+
+// Initialize Firebase Auth
+export const auth = getAuth(app);

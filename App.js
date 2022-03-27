@@ -20,10 +20,7 @@ export default function App() {
 					name={ROUTE.WELCOME_TAB.PRINCIPALE}
 					component={MainPage}
 				/>
-				<Stack.Screen
-					name={ROUTE.WELCOME_TAB.AUTH}
-					component={Auth}
-				/>
+				<Stack.Screen name={ROUTE.WELCOME_TAB.AUTH} component={Auth} />
 				<Stack.Screen
 					name={ROUTE.PROFIL_TAB.PROFIL}
 					component={ProfilePage}
