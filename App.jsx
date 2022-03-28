@@ -12,7 +12,11 @@ export default function App() {
 		for (const routeName in routes[groupName]) {
 			const route = routes[groupName][routeName];
 			pages.push(
-				<Stack.Screen name={route.name} component={route.component} />
+				<Stack.Screen
+					key={route.name}
+					name={route.name}
+					component={route.component}
+				/>
 			);
 		}
 	}

@@ -1,8 +1,10 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
+	setPersistence,
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,
+	browserLocalPersistence,
 } from "firebase/auth";
 
 import { auth } from "../../utils/firebase";
@@ -15,26 +17,24 @@ export default function Auth(props) {
 	const [message, setMessage] = useState("");
 	const [messageColor, setMessageColor] = useState("red");
 
-	function onSubmit(mail, password) {
+	async function onSubmit(mail, password) {
+		await setPersistence(auth, browserLocalPersistence);
+
 		const execute = loginForm
 			? signInWithEmailAndPassword
 			: createUserWithEmailAndPassword;
 
-		execute(auth, mail, password)
-			.then(function (data) {
-				setMessageColor("green");
-				setMessage(
-					`Bienvenue, ${data.user.email} ! Nous vous connectons...`
-				);
-				setTimeout(
-					() => props.navigation.navigate("home/profile"),
-					1000
-				);
-			})
-			.catch(function (error) {
-				setMessageColor("red");
-				setMessage(convertAuthMessage(error));
-			});
+		try {
+			const data = await execute(auth, mail, password);
+			setMessageColor("green");
+			setMessage(
+				`Bienvenue, ${data.user.email} ! Nous vous connectons...`
+			);
+			setTimeout(() => props.navigation.navigate("home/profile"), 500);
+		} catch (error) {
+			setMessageColor("red");
+			setMessage(convertAuthMessage(error));
+		}
 	}
 
 	return (
