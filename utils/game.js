@@ -42,9 +42,11 @@ import { auth } from "./firebase";
 /**
  * Crée une nouvelle partie dans firebase
  * @param {string} name Le nom de la partie
- * @return {Promise<DocumentReference<lobbyData>>} une promise retournant le document nouvellement créé
+ * @return {Promise<{"docRef": DocumentReference<lobbyData>, "user": UnoUser}>} une promise retournant le document nouvellement créé
  */
 export async function newLobby(name) {
+	const user = new UnoUser(auth.currentUser.email).makeHost();
+
 	/**
 	 * @type {lobbyData}
 	 */
@@ -52,12 +54,13 @@ export async function newLobby(name) {
 		name,
 		pioche: createCard(),
 		started: false,
-		users: [new UnoUser(auth.currentUser.email).makeHost().get()],
+		users: [user.get()],
 		playingId: 0,
 	};
 	const docRef = await addDoc(collection(db, "appmob_lobby"), data);
+	user.setLobbyId(docRef.id);
 	// @ts-ignore
-	return docRef;
+	return {docRef, user};
 }
 
 export async function startLobby(id) {
@@ -78,9 +81,11 @@ export async function joinLobby(document) {
 		}
 	}
 
-	data.users.push(new UnoUser(auth.currentUser.email).get());
-
+	const user = new UnoUser(auth.currentUser.email);
+	user.setLobbyId(document.id);
+	data.users.push(user.get());
 	await setDoc(doc(db, "appmob_lobby", document.id), data, { merge: true });
+	return user;
 }
 
 export async function searchLobby(name) {
@@ -95,17 +100,28 @@ export async function searchLobby(name) {
 }
 
 export async function leaveLobby(id, name) {
-	console.log(id, name);
 	const document = await getDoc(doc(db, "appmob_lobby", id));
 	const data = document.data();
 	data.users = data.users.filter((user) => user.name !== name);
-	console.log(data.users);
 	await setDoc(doc(db, "appmob_lobby", document.id), data);
 }
 
 export async function deleteLobby(id) {
 	await deleteDoc(doc(db, "appmob_lobby", id));
 }
+
+
+
+/**
+ * @param {*} doc 
+ * @param {Carte} carte 
+ */
+export async function mettreAJourPioche(doc, carte) {
+	/** @type {lobbyData} */
+	const data = doc.data();
+	data.pioche = carte;
+}
+
 
 /**
  *
@@ -127,6 +143,7 @@ export class UnoUser {
 	cards = [];
 	host = false;
 	winner = -1;
+	lobbyId = null;
 
 	constructor(name) {
 		this.name = name;
@@ -145,11 +162,24 @@ export class UnoUser {
 		return this;
 	}
 
+	setLobbyId(id) {
+		this.lobbyId = id;
+		return this;
+	}
+	getLobbyId() {
+		return this.lobbyId;
+	}
+
+	getName() {
+		return this.name;
+	}
+
 	get() {
 		return {
 			name: this.name,
 			cards: this.cards,
 			host: this.host,
+			winner: this.winner,
 		};
 	}
 }

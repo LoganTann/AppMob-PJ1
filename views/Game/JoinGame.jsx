@@ -12,7 +12,7 @@ export default function JoinGame(props) {
 	const [cooldown, setCooldown] = React.useState(false);
 	const [results, setResults] = React.useState([]);
 
-	const [lobbyId, setLobbyId] = React.useState(null);
+	const [user, setUser] = React.useState(null);
 	const [lobbyData, setLobbyData] = React.useState(null);
 
 	/**
@@ -22,16 +22,16 @@ export default function JoinGame(props) {
 	async function leaveGame(fromHost) {
 		unsubscribe();
 		if (fromHost !== true) {
-			leaveLobby(lobbyId, auth.currentUser.email);
+			leaveLobby(user.getLobbyId(), user.getName());
 		}
+		setUser(null);
 		setLobbyData(null);
 		setResults([]);
 		setGameName("");
 	}
 
 	async function joinGame(document) {
-		await joinLobby(document);
-		setLobbyId(document.id);
+		setUser(await joinLobby(document));
 		const docRef = doc(db, "appmob_lobby", document.id);
 		unsubscribe = onSnapshot(docRef, function (doc) {
 			if (!doc.exists()) {
@@ -76,7 +76,7 @@ export default function JoinGame(props) {
 			}
 			if (lobbyData.started) {
 				unsubscribe();
-				props.navigation.navigate("game/play");
+				props.navigation.navigate("game/play", {user});
 			}
 		},
 		[lobbyData]

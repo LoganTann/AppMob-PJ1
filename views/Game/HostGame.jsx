@@ -15,18 +15,20 @@ export default function HostGame(props) {
 	 * @type {[import('../../utils/game.js').lobbyData, function]}
 	 */
 	const [lobbyData, setLobbyData] = React.useState(null);
-	const [lobbyId, setLobbyId] = React.useState(null);
+	const [user, setUser] = React.useState(null);
 
 	async function removeGame() {
 		unsubscribe();
-		await deleteLobby(lobbyId);
+		await deleteLobby(user.getLobbyId());
 		setLobbyData(null);
+		setUser(null);
 	}
 
 	async function createGame() {
 		try {
-			const docRef = await newLobby(gameName);
-			setLobbyId(docRef.id);
+			const lobbyData = await newLobby(gameName);
+			const docRef = lobbyData.docRef;
+			setUser(lobbyData.user);
 			unsubscribe = onSnapshot(docRef, function (doc) {
 				if (!doc.exists()) return;
 				setLobbyData(doc.data());
@@ -40,7 +42,7 @@ export default function HostGame(props) {
 	// assume lobbyData a été créé
 	async function startGame() {
 		try {
-			await startLobby(lobbyId);
+			await startLobby(user.getLobbyId());
 		} catch (error) {
 			console.error(error);
 			setMessage(error.message);
@@ -51,7 +53,7 @@ export default function HostGame(props) {
 		function () {
 			if (lobbyData && lobbyData.started) {
 				unsubscribe();
-				props.navigation.navigate("game/play");
+				props.navigation.navigate("game/play", {user});
 			}
 		},
 		[lobbyData]
@@ -73,7 +75,7 @@ export default function HostGame(props) {
 		<View>
 			<UseExitPrompt />
 			<Text>Partie : {lobbyData.name}</Text>
-			<Text>Id : {lobbyId}</Text>
+			<Text>Id : {user.getLobbyId()}</Text>
 			<Text>En attente de nouvelles personnes</Text>
 			{lobbyData.users.map((player, i) => (
 				<Text key={player.name}>{player.name}</Text>
